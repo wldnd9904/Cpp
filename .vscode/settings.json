@@ -2,6 +2,12 @@
   "files.associations": {
     "vector": "cpp",
     "list": "cpp",
-    "algorithm": "cpp"
-  }
+    "algorithm": "cpp",
+    "iostream": "cpp",
+    "ostream": "cpp",
+    "iosfwd": "cpp",
+    "__split_buffer": "cpp",
+    "deque": "cpp",
+    "string": "cpp"
+  },
 }
