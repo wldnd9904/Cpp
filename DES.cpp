@@ -151,6 +151,35 @@ int B2I(const string &input)
     }
     return output;
 }
+// Binary to Hex
+string B2H(const string &binary)
+{
+    string output = "";
+    int tmp = 0;
+    const int length = binary.length();
+    if (length % 4 != 0)
+        return "error";
+    for (int i = 0; i < length; i += 4)
+    {
+        tmp = B2I(binary.substr(i, 4));
+        output.push_back(tmp < 10 ? (tmp + '0') : (tmp + 'A' - 10));
+    }
+    return output;
+}
+// Hex to Binary
+string H2B(const string &hex)
+{
+    string output = "";
+    int tmp = 0;
+    const int length = hex.length();
+    for (int i = 0; i < length; i++)
+    {
+        tmp = hex[i];
+        tmp = tmp < 'A' ? (tmp - '0') : (tmp - 'A' + 10);
+        output += I2B(tmp);
+    }
+    return output;
+}
 // S-Box
 string SBox(const string &input, const int offset, const vector<vector<int> > box)
 {
@@ -190,38 +219,37 @@ void KeyGen(const string &key, vector<string> &v)
 string DES(const string &plainText, const string &key)
 {
     vector<string> keys = vector<string>(16);
-    KeyGen(key, keys);
+    KeyGen(H2B(key), keys);
 
-    string output = P(plainText, IP);    // Initial Permutation
-    for (int i = 0; i < 16; i++)         // 16 Rounds
-        output = Round(output, keys[i]); // LiRi
-    output = R(output) + L(output);      // R16L16
-    output = P(output, invIP);           // IP-1
-    return output;
+    string output = P(H2B(plainText), IP); // Initial Permutation
+    for (int i = 0; i < 16; i++)           // 16 Rounds
+        output = Round(output, keys[i]);   // LiRi
+    output = R(output) + L(output);        // R16L16
+    output = P(output, invIP);             // IP-1
+    return B2H(output);
 }
 // unDES
 string unDES(const string &cipherText, const string &key)
 {
     vector<string> keys = vector<string>(16);
-    KeyGen(key, keys);
+    KeyGen(H2B(key), keys);
 
-    string output = P(cipherText, IP);   // Initial Permutation
-    for (int i = 15; i >= 0; i--)        // 16 reverse Rounds
-        output = Round(output, keys[i]); // LiRi
-    output = R(output) + L(output);      // R16L16
-    output = P(output, invIP);           // IP-1
-    return output;
+    string output = P(H2B(cipherText), IP); // Initial Permutation
+    for (int i = 15; i >= 0; i--)           // 16 reverse Rounds
+        output = Round(output, keys[i]);    // LiRi
+    output = R(output) + L(output);         // R16L16
+    output = P(output, invIP);              // IP-1
+    return B2H(output);
 }
-
 int main()
 {
-    string plainText = "0000000100100011010001010110011110001001101010111100110111101111"; // 0123456789ABCDEF
-    string key = "0001001100110100010101110111100110011011101111001101111111110001";
-    cout << "plainText: " << plainText << endl;
-    cout << "key: " << key << endl;
+    string plainText = "0123456789ABCDEF"; // 0000000100100011010001010110011110001001101010111100110111101111
+    string key = "133457799BBCDFF1";       // 0001001100110100010101110111100110011011101111001101111111110001
+    cout << "plainText:\t" << plainText << endl;
+    cout << "key:\t\t" << key << endl;
     string cipherText = DES(plainText, key);
-    cout << "cipherText: " << cipherText << endl;
+    cout << "cipherText:\t" << cipherText << endl;
     string decryptedText = unDES(cipherText, key);
-    cout << "plainText: " << decryptedText << endl;
+    cout << "decryptedText:\t" << decryptedText << endl;
     return 0;
 }
