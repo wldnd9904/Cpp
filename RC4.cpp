@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#define BITSIZE 8
+#define BITSIZE 256
 using namespace std;
 //-----------------------------//
 // RC4 알고리즘
