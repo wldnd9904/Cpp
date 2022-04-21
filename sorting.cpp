@@ -156,12 +156,12 @@ void heapSort(vector<int> &v)
     }
     v.erase(v.begin());
 }
-// Selection
+// Select [target]th Element
 int selection(const vector<int> &v, int target)
 {
     vector<vector<int> > fives; // 다섯개씩 넣은 배열을 담은 2차원 벡터
-    vector<int> lesses, greaters;
-    int i = 0, vSize = v.size(), midOfMid;
+    vector<int> medians, lesses, greaters;
+    int i = 0, vSize = v.size(), MoM;
     if (target > vSize)
         return 0;
     if (vSize <= 10) // 원소가 10개 이하라면 그냥 정렬
@@ -203,49 +203,58 @@ int selection(const vector<int> &v, int target)
         }
         fives.push_back(minivec);
     }
-    //중간값 기준으로 미니벡터들 정렬 (마지막 미니벡터 제외)
-    sort<vector<vector<int> >::iterator>(fives.begin(), fives.end() - 1, [](vector<int> a, vector<int> b)
-                                         { return a[2] < b[2]; });
-    midOfMid = fives[fives.size() / 2][2];
-    for (int i = 0; i < fives.size() / 2; i++)
+    for (int i = 0; i < fives.size(); i++) // 5개짜리 배열의 중간값들만 모아놓기 (medians)
     {
-        for (int j = 0; j < 3; j++)
-            lesses.push_back(fives[i][j]);
-        for (int j = 3; j < 5; j++)
-        {
-            if (fives[i][j] > midOfMid)
-                greaters.push_back(fives[i][j]);
-            else
-                lesses.push_back(fives[i][j]);
-        }
+        if (fives[i].size() == 5)
+            medians.push_back(fives[i][2]);
     }
-    for (int i = fives.size() / 2; i < fives.size() - 1; i++)
+    MoM = selection(medians, medians.size() / 2); // median of medians 재귀적으로 구하기
+    for (int i = 0; i < fives.size() - 1; i++)
     {
-        for (int j = 0; j < 2; j++)
+        if (fives[i][2] < MoM) // 중간값이 중간중간값보다 작을 때: 3개가 작은쪽, 2개는 검사
         {
-            if (fives[i][j] > midOfMid)
-                greaters.push_back(fives[i][j]);
-            else
+            for (int j = 0; j < 3; j++)
                 lesses.push_back(fives[i][j]);
+            for (int j = 3; j < 5; j++)
+            {
+                if (fives[i][j] < MoM)
+                    lesses.push_back(fives[i][j]);
+                else
+                    greaters.push_back(fives[i][j]);
+            }
         }
-        for (int j = 2; j < 5; j++)
-            greaters.push_back(fives[i][j]);
+        else if (fives[i][2] > MoM)
+        { // 중간값이 중간중간값보다 작을 때: 2개 검사, 3개는 큰쪽
+            for (int j = 0; j < 2; j++)
+            {
+                if (fives[i][j] < MoM)
+                    lesses.push_back(fives[i][j]);
+                else
+                    greaters.push_back(fives[i][j]);
+            }
+            for (int j = 2; j < 5; j++)
+                greaters.push_back(fives[i][j]);
+        }
+        else
+        { // 중간값이 중간중간값이면 2개는 작은쪽, 3개는 큰쪽
+            for (int j = 0; j < 2; j++)
+                lesses.push_back(fives[i][j]);
+            for (int j = 2; j < 5; j++)
+                greaters.push_back(fives[i][j]);
+        }
     }
     for (int j = 0; j < fives[fives.size() - 1].size(); j++)
     {
-        if (fives[fives.size() - 1][j] > midOfMid)
-            greaters.push_back(fives[fives.size() - 1][j]);
-        else
+        if (fives[fives.size() - 1][j] < MoM)
             lesses.push_back(fives[fives.size() - 1][j]);
+        else
+            greaters.push_back(fives[fives.size() - 1][j]);
     }
+
     if (target >= lesses.size())
-    {
         return selection(greaters, target - lesses.size());
-    }
     else
-    {
         return selection(lesses, target);
-    }
 }
 // Check if the container is ordered
 template <typename Iterator>
@@ -273,7 +282,7 @@ int main()
 
     cout << "Insertion Sort:" << endl;
     start = clock(); // 실행시간 측정용 클락
-    insertionSort(lInsertion);
+    // insertionSort(lInsertion);
     cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
     check<list<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
     // printContainer<vector<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
