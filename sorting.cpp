@@ -4,6 +4,63 @@
 #include <random>
 #define INF 999999
 using namespace std;
+void swap(int &, int &);
+void generate(vector<int> &, int);
+template <typename Iterator>
+void printContainer(Iterator, Iterator);
+void insertionSort(list<int> &);
+void quickSort(vector<int> &, int = 0, int = INF);
+void merge(vector<int> &, int, int, int);
+void mergeSort(vector<int> &, int = 0, int = INF);
+void heapify(vector<int> &, int);
+void heapSort(vector<int> &);
+int selection(const vector<int> &, int);
+template <typename Iterator>
+void check(Iterator, Iterator);
+
+int main()
+{
+    vector<int> v, vQuick, vMerge, vHeap;
+    clock_t start;
+    generate(v, 100000);
+    vQuick = vMerge = vHeap = v;
+    list<int> lInsertion(v.begin(), v.end()); // v와 원소가 같은 연결 리스트 생성
+
+    cout << "Insertion Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    insertionSort(lInsertion);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<list<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
+    // printContainer<vector<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
+
+    cout << "Quick Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    quickSort(vQuick);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
+    // printContainer<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
+
+    cout << "Merge Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    mergeSort(vMerge);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
+    // printContainer<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
+
+    cout << "Heap Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    heapSort(vHeap);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
+    // printContainer<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
+
+    cout << "Selection:" << endl;
+    cout << "49999번째 원소는... ";
+    start = clock(); // 실행시간 측정용 클락
+    cout << selection(v, 49999) << endl;
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms";
+}
+
 // Simple int swap
 void swap(int &a, int &b)
 {
@@ -54,7 +111,7 @@ void insertionSort(list<int> &l)
     }
 }
 // Quick Sort
-void quickSort(vector<int> &v, int first = 0, int last = INF)
+void quickSort(vector<int> &v, int first, int last)
 {
     if (last == INF)
         last = v.size() - 1;
@@ -108,7 +165,7 @@ void merge(vector<int> &v, int left, int mid, int right)
         v[k + left] = tmpv[k];
 }
 // Merge Sort
-void mergeSort(vector<int> &v, int first = 0, int last = INF)
+void mergeSort(vector<int> &v, int first, int last)
 {
     if (first >= last)
         return;
@@ -271,46 +328,4 @@ void check(Iterator begin, Iterator end)
         }
     }
     cout << "ordered" << endl;
-}
-int main()
-{
-    vector<int> v, vQuick, vMerge, vHeap;
-    clock_t start;
-    generate(v, 100000);
-    vQuick = vMerge = vHeap = v;
-    list<int> lInsertion(v.begin(), v.end()); // v와 원소가 같은 연결 리스트 생성
-
-    cout << "Insertion Sort:" << endl;
-    start = clock(); // 실행시간 측정용 클락
-    insertionSort(lInsertion);
-    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-    check<list<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
-    // printContainer<vector<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
-
-    cout << "Quick Sort:" << endl;
-    start = clock(); // 실행시간 측정용 클락
-    quickSort(vQuick);
-    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-    check<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
-    // printContainer<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
-
-    cout << "Merge Sort:" << endl;
-    start = clock(); // 실행시간 측정용 클락
-    mergeSort(vMerge);
-    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-    check<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
-    // printContainer<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
-
-    cout << "Heap Sort:" << endl;
-    start = clock(); // 실행시간 측정용 클락
-    heapSort(vHeap);
-    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-    check<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
-    // printContainer<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
-
-    cout << "Selection:" << endl;
-    cout << "49999번째 원소는... ";
-    start = clock(); // 실행시간 측정용 클락
-    cout << selection(v, 49999) << endl;
-    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms";
 }
