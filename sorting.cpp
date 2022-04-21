@@ -282,7 +282,7 @@ int main()
 
     cout << "Insertion Sort:" << endl;
     start = clock(); // 실행시간 측정용 클락
-    // insertionSort(lInsertion);
+    insertionSort(lInsertion);
     cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
     check<list<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
     // printContainer<vector<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
