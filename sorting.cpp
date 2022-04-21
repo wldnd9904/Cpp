@@ -11,7 +11,7 @@ void swap(int &a, int &b)
     a = b;
     b = tmp;
 }
-// Generate random [count] integers and shuffle
+// Generate [1,2,...,count] and shuffle
 void generate(vector<int> &v, int count)
 {
     for (int i = count; i != 0; i--)
@@ -160,56 +160,92 @@ void heapSort(vector<int> &v)
 int selection(const vector<int> &v, int target)
 {
     vector<vector<int> > fives; // 다섯개씩 넣은 배열을 담은 2차원 벡터
-    int i = 0, vSize = v.size();
+    vector<int> lesses, greaters;
+    int i = 0, vSize = v.size(), midOfMid;
+    if (target > vSize)
+        return 0;
+    if (vSize <= 10) // 원소가 10개 이하라면 그냥 정렬
+    {
+        vector<int> vc(v);
+        sort<vector<int>::iterator>(vc.begin(), vc.end());
+        return vc[target];
+    }
     while (i < vSize)
     {
         vector<int> minivec;
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 5; j++) // 5개씩 뽑아서 미니벡터 만들기
         {
             minivec.push_back(v[i++]);
-            cout << minivec[j] << ' ';
             if (i == vSize)
                 break;
         }
-        if (minivec[0] > minivec[1])
-            swap(minivec[0], minivec[1]); //[0]<[1]
-        if (minivec[2] > minivec[3])
-            swap(minivec[2], minivec[3]); //[0]<[1], [2]<[3]
-        if (minivec[1] > minvec[3])
-        { // [1] 제외
-            if (minivec[4] > minivec[0])
-            { //[0]<[4], [2]<[3]
-                if (minivec[4] > minivec[3])
-                { // [4] 제외
-                    if (minivec[0] > minivec[3])
-                    {
-                        //[2]<[3]<[0]<[1],[4]
-                    }
-                    else
-                    {
-                        //[0],[2]<[3]<[1],[4]
-                    }
-                }
-                else
-                { // [3] 제외
-                    if (minivec[4] > minivec[2])
-                    {
-                        //[0],[2]<[4]<[3],[1]
-                    }
-                    else
-                    {
-                        //[0]<[4]<[2]<[3],[1]
-                    }
-                }
+        if (minivec.size() == 5) // 5개가 들어갔으면 중간값 찾기, 그 이하인 배열은 맨 마지막 하나(없을수도)
+        {
+            if (minivec[0] > minivec[1])
+                swap(minivec[0], minivec[1]); //[0]<[1]
+            if (minivec[2] > minivec[3])
+                swap(minivec[2], minivec[3]); //[0]<[1], [2]<[3]
+            if (minivec[1] > minivec[3])
+            {
+                swap(minivec[0], minivec[2]);
+                swap(minivec[1], minivec[3]); //[0]<[1], [2]<[3], [1]<[3]
             }
-            else
-            { // []
+            swap(minivec[3], minivec[4]); // [3],[4] 바꾸고 [4] 제외 (1~2번째로 큰  수)
+            if (minivec[2] > minivec[3])
+                swap(minivec[2], minivec[3]); //[0]<[1], [2]<[3]< ( [4] )
+            if (minivec[1] > minivec[3])
+            {
+                swap(minivec[0], minivec[2]);
+                swap(minivec[1], minivec[3]); //[0]<[1], [2]< ( [3],[4] )
             }
+            if (minivec[1] > minivec[2])
+                swap(minivec[1], minivec[2]); // ( [0],[1] )<[2]<( [3],[4] )
         }
-    } // 5~6번의 비교로 minivec[2]가 중간값, 그 앞은 작은 값, 그 뒤는 큰 값 만들기.
-    fives.push_back(minivec);
-    cout << endl;
-}
+        fives.push_back(minivec);
+    }
+    //중간값 기준으로 미니벡터들 정렬 (마지막 미니벡터 제외)
+    sort<vector<vector<int> >::iterator>(fives.begin(), fives.end() - 1, [](vector<int> a, vector<int> b)
+                                         { return a[2] < b[2]; });
+    midOfMid = fives[fives.size() / 2][2];
+    for (int i = 0; i < fives.size() / 2; i++)
+    {
+        for (int j = 0; j < 3; j++)
+            lesses.push_back(fives[i][j]);
+        for (int j = 3; j < 5; j++)
+        {
+            if (fives[i][j] > midOfMid)
+                greaters.push_back(fives[i][j]);
+            else
+                lesses.push_back(fives[i][j]);
+        }
+    }
+    for (int i = fives.size() / 2; i < fives.size() - 1; i++)
+    {
+        for (int j = 0; j < 2; j++)
+        {
+            if (fives[i][j] > midOfMid)
+                greaters.push_back(fives[i][j]);
+            else
+                lesses.push_back(fives[i][j]);
+        }
+        for (int j = 2; j < 5; j++)
+            greaters.push_back(fives[i][j]);
+    }
+    for (int j = 0; j < fives[fives.size() - 1].size(); j++)
+    {
+        if (fives[fives.size() - 1][j] > midOfMid)
+            greaters.push_back(fives[fives.size() - 1][j]);
+        else
+            lesses.push_back(fives[fives.size() - 1][j]);
+    }
+    if (target >= lesses.size())
+    {
+        return selection(greaters, target - lesses.size());
+    }
+    else
+    {
+        return selection(lesses, target);
+    }
 }
 // Check if the container is ordered
 template <typename Iterator>
@@ -231,40 +267,41 @@ int main()
 {
     vector<int> v, vQuick, vMerge, vHeap;
     clock_t start;
-    generate(v, 23);
+    generate(v, 100000);
     vQuick = vMerge = vHeap = v;
     list<int> lInsertion(v.begin(), v.end()); // v와 원소가 같은 연결 리스트 생성
 
-    /*
+    cout << "Insertion Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    insertionSort(lInsertion);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<list<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
+    // printContainer<vector<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
 
-        cout << "Insertion Sort:" << endl;
-        start = clock(); // 실행시간 측정용 클락
-        insertionSort(lInsertion);
-        cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-        check<list<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
-        // printContainer<vector<int>::const_iterator>(lInsertion.begin(), lInsertion.end());
+    cout << "Quick Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    quickSort(vQuick);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
+    // printContainer<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
 
-        cout << "Quick Sort:" << endl;
-        start = clock(); // 실행시간 측정용 클락
-        quickSort(vQuick);
-        cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-        check<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
-        // printContainer<vector<int>::const_iterator>(vQuick.begin(), vQuick.end());
+    cout << "Merge Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    mergeSort(vMerge);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
+    // printContainer<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
 
-        cout << "Merge Sort:" << endl;
-        start = clock(); // 실행시간 측정용 클락
-        mergeSort(vMerge);
-        cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-        check<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
-        // printContainer<vector<int>::const_iterator>(vMerge.begin(), vMerge.end());
+    cout << "Heap Sort:" << endl;
+    start = clock(); // 실행시간 측정용 클락
+    heapSort(vHeap);
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
+    check<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
+    // printContainer<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
 
-        cout << "Heap Sort:" << endl;
-        start = clock(); // 실행시간 측정용 클락
-        heapSort(vHeap);
-        cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms, ";
-        check<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
-        // printContainer<vector<int>::const_iterator>(vHeap.begin(), vHeap.end());
-
-        */
-    selection(v, 49999);
+    cout << "Selection:" << endl;
+    cout << "49999번째 원소는... ";
+    start = clock(); // 실행시간 측정용 클락
+    cout << selection(v, 49999) << endl;
+    cout << "Time : " << ((int)clock() - start) / (CLOCKS_PER_SEC / 1000) << "ms";
 }
