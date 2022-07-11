@@ -17,9 +17,16 @@ int firstBlankX = -1, firstBlankY = -1;
 
 int main(void)
 {
-    vector<string> question = {"#.....#",
-                               "#.....#",
-                               "##..###"};
+    vector<string> question = {
+        "##########",
+        "#........#",
+        "#........#",
+        "#........#",
+        "#........#",
+        "#........#",
+        "#........#",
+        "##########",
+    };
     cout << solution(question.size(), question[0].size(), question) << endl;
 }
 
@@ -52,14 +59,14 @@ int dfs(int y, int x)
 {
     if (y == height)
     {
-        cout << "found one!" << endl;
+        // cout << "found one!" << endl;
         return 1;
     }
     if (x == width)
         return dfs(y + 1, 0);
     if (map[y][x] == '#')
         return dfs(y, x + 1);
-    printMap();
+    // printMap();
     int ret[4];
     for (int i = 0; i < 4; i++)
     {
