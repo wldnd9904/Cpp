@@ -35,8 +35,10 @@ int solution(int _height, int _width, vector<string> _map)
     height = _height;
     width = _width;
     map = _map;
-    getFirstBlank();
-    return dfs(firstBlankY, firstBlankX);
+    if (getFirstBlank())
+        return dfs(firstBlankY, firstBlankX);
+    else
+        return 0;
 }
 
 bool getFirstBlank()

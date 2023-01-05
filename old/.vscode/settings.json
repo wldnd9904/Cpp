@@ -75,6 +75,7 @@
     "iterator": "cpp",
     "utility": "cpp",
     "queue": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "RSA.C": "cpp"
   }
 }
