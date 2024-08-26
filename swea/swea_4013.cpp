@@ -27,11 +27,11 @@ int main() {
   int M, A;
   int dirA[101] = {0};
   int dirB[101] = {0};
-  list<BC*> board[11][11];
+  list<BC*> board[20][20];
   BC bc_pool[8];
   for (int test_case = 1; test_case <= T; ++test_case) {
-    for (int i = 1; i <= 10; i++)
-      for (int j = 1; j <= 10; j++) board[i][j].clear();
+    for (int i = 1; i <= 20; i++)
+      for (int j = 1; j <= 20; j++) board[i][j].clear();
 
     cin >> M >> A;
     for (int i = 1; i <= M; i++) cin >> dirA[i];
